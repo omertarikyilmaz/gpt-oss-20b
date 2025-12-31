@@ -1,39 +1,26 @@
-# GPT-OSS-20B for Medya Takip Merkezi (MTM)
+# Medya Takip Merkezi (MTM) - Llama 3.3 70B Service
 
-This project provides a premium web interface and an optimized inference backend for the OpenAI `gpt-oss-20b` model, specifically designed for NVIDIA Grace Blackwell (GB10) servers.
+This project provides a premium, AI-powered chat interface for MTM, powered by the **Llama 3.3 70B** model running on **Ollama**. Optimized for NVIDIA Grace Blackwell (ARM64) architecture.
 
 ## Features
 - **MTM Premium UI**: Glassmorphic, modern chat interface with "Düşünce Süreci" (thought process) support.
-- **vLLM Inference**: Optimized for Blackwell architecture with MXFP4 quantization support.
-- **Harmony Format**: Native handling of the harmony response format.
+- **Llama 3.3 70B**: State-of-the-art open model with massive 70B parameter reasoning capabilities.
+- **ARM64 Native**: Powered by Ollama, fully compatible with Grace CPU and NVIDIA GPU.
 - **Dockerized**: Easy deployment with Docker Compose.
-
-## Hardware Requirements
-- NVIDIA GB10 (Grace Blackwell) or any GPU with 16GB+ VRAM (for MXFP4).
-- 128GB Unified Memory (optimized path).
 
 ## Quick Start
 
 1. **Clone the project** to your local environment.
-2. **Transfer to Server**: Copy the project folder to your GB10 server.
+2. **Transfer to Server**: Copy the project folder to your server.
 3. **Run with Docker Compose**:
    ```bash
    docker compose up --build -d
    ```
+   *Note: On first run, it will automatically download the Llama 3.3 70B model (approx. 40GB). This may take some time depending on internet speed.*
 
-## Local Network Access
-Once the containers are running, people in your local network can access the MTM interface via:
+## Access
 - **URL**: `http://<YOUR_SERVER_IP>:3000`
 
-Replace `<YOUR_SERVER_IP>` with the actual IP address of your Grace Blackwell server (e.g., `192.168.1.50`).
-
-## Optimization Notes
-- **vLLM Engine**: Configured with `--gpu-memory-utilization 0.95` and optimized for Blackwell kernels.
-- **Quantization**: Uses native MXFP4 support for the MoE weights as per OpenAI's design.
-- **Unified Memory**: The backend is configured to leverage the High Bandwidth Memory of the GB10 for maximum token throughput.
-
-## Environment Variables
-- `VITE_API_URL`: The URL of the vLLM API (default: `http://localhost:8000/v1`).
-
----
-Developed for **Medya Takip Merkezi (MTM)**.
+## Architecture
+- **Backend**: Ollama serving `llama3.3:70b` at port 11434.
+- **Frontend**: Vite + React served via Nginx at port 3000.

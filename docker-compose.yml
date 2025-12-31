@@ -1,9 +1,9 @@
 services:
   llm-backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.vllm
-    container_name: mtm-gpt-backend
+    image: ollama/ollama:latest
+    container_name: mtm-ollama
+    volumes:
+      - ollama_models:/root/.ollama
     deploy:
       resources:
         reservations:
@@ -12,10 +12,22 @@ services:
               count: all
               capabilities: [gpu]
     ports:
-      - "8000:8000"
+      - "11434:11434"
     restart: always
-    volumes:
-      - hf_cache:/root/.cache/huggingface
+
+  # Service to auto-pull the model on startup
+  model-puller:
+    image: curlimages/curl
+    container_name: mtm-model-puller
+    command: >
+      /bin/sh -c "
+      echo 'Waiting for Ollama to start...';
+      sleep 5;
+      echo 'Pulling llama3.3:70b...';
+      curl -X POST http://llm-backend:11434/api/pull -d '{\"name\": \"llama3.3:70b\"}';
+      echo 'Model pulled successfully!';"
+    depends_on:
+      - llm-backend
 
   frontend:
     build:
@@ -26,8 +38,9 @@ services:
     depends_on:
       - llm-backend
     environment:
-      - VITE_API_URL=http://localhost:8000/v1
+      # Ollama OpenAI-compatible endpoint
+      - VITE_API_URL=http://localhost:11434/v1
     restart: always
 
 volumes:
-  hf_cache:
+  ollama_models:
