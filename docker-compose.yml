@@ -1,0 +1,33 @@
+services:
+  llm-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.vllm
+    container_name: mtm-gpt-backend
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: mtm-gpt-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - llm-backend
+    environment:
+      - VITE_API_URL=http://localhost:8000/v1
+    restart: always
+
+volumes:
+  hf_cache:
