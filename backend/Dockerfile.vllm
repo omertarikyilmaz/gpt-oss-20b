@@ -18,8 +18,8 @@ RUN uv pip install --system --pre vllm==0.10.1+gptoss \
 ENV CUDA_VISIBLE_DEVICES=0
 
 # Command to serve the model with optimizations for Grace Blackwell
-# --max-model-len 32768 (or higher if needed)
-# --gpu-memory-utilization 0.95 to maximize VRAM usage
-# vLLM automatically detects architecture and uses optimized kernels
+# --gpu-memory-utilization 0.95: Maximizes VRAM usage (crucial for large context on 128GB GB10)
+# --max-num-seqs 512: Increased batch size for higher throughput
+# Removed --max-model-len to allow vLLM to auto-detect the maximum supported by the model/hardware
 ENTRYPOINT ["vllm", "serve", "openai/gpt-oss-20b"]
-CMD ["--host", "0.0.0.0", "--port", "8000", "--max-model-len", "8192", "--gpu-memory-utilization", "0.95", "--max-num-seqs", "256"]
+CMD ["--host", "0.0.0.0", "--port", "8000", "--gpu-memory-utilization", "0.98", "--max-num-seqs", "512"]
